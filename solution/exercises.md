@@ -9,7 +9,7 @@ Gọi `call_openai` với temperature 0.0, 0.5, 1.0 và 1.5 dùng prompt
 **"Hãy kể cho tôi một sự thật thú vị về Việt Nam."**
 
 **Bạn nhận thấy quy luật gì qua bốn phản hồi?** (2–3 câu)
-> Khi temperature = 0.0, phản hồi mang tính xác định (deterministic) cao, luôn chọn từ có xác suất lớn nhất nên nội dung rất an toàn, chuẩn mực và ít thay đổi; khi tăng lên 0.5 – 1.0, câu trả lời trở nên linh hoạt, giàu chi tiết và tự nhiên hơn; nhưng khi lên 1.5, mô hình chọn cả các từ có xác suất thấp khiến câu văn lan man, lủng củng và tăng mạnh nguy cơ sinh thông tin sai lệch (hallucination).
+> Khi temperature = 0.0, phản hồi mang tính xác định (deterministic) cao, luôn chọn từ có xác suất lớn nhất nên nội dung rất an toàn, chuẩn mực và ít thay đổi; khi tăng lên 0.5 – 1.0, câu trả lời trở nên linh hoạt, giàu chi tiết và tự nhiên hơn; nhưng khi lên 1.5, mô hình chọn cả các từ có xác suất thấp khiến câu văn lan man, lủng củng và tăng mạnh nguy cơ hallucination.
 
 ### Câu 1.2 — Chọn temperature cho sản phẩm
 **Bạn sẽ đặt temperature bao nhiêu cho chatbot hỗ trợ khách hàng, và tại sao?**
@@ -35,7 +35,7 @@ Gọi `chat_with_system_prompt` hai lần với cùng câu hỏi
 
 **Hai phản hồi khác nhau như thế nào (độ dài, từ vựng, ví dụ)? System prompt
 ảnh hưởng đến hành vi model ra sao?** (3–4 câu)
-> Khác biệt ở chỗ persona giáo viên tiểu học dùng câu ngắn, từ ngữ giản dị và ẩn dụ trực quan dễ hiểu, trong khi persona chuyên gia tài chính dùng văn phong học thuật, cấu trúc chặt chẽ với nhiều thuật ngữ chuyên sâu; system prompt đóng vai trò như lệnh mẫu thiết lập khung tham chiếu toàn cục, giúp mô hình tự động điều chỉnh đối tượng mục tiêu, văn phong diễn đạt và độ sâu kiến thức mà không cần người dùng mô tả lại ở từng câu hỏi.
+> Khác biệt: giáo viên tiểu học dùng câu ngắn, từ ngữ giản dị và ẩn dụ trực quan dễ hiểu; persona chuyên gia tài chính dùng văn phong học thuật, cấu trúc chặt chẽ với nhiều thuật ngữ chuyên sâu; system prompt đóng vai trò như lệnh mẫu, khung tham chiếu, giúp mô hình tự động điều chỉnh đối tượng mục tiêu, văn phong diễn đạt và độ sâu kiến thức mà không cần người dùng mô tả lại ở từng câu hỏi.
 
 ### Câu 2.2 — tiktoken vs đếm từ
 Chọn một đoạn văn tiếng Việt ~100 từ. So sánh số token theo `count_tokens`
@@ -52,13 +52,13 @@ nhiều token hơn tiếng Anh cùng độ dài?**
 ### Câu 3.1 — Trải nghiệm người dùng với streaming
 **Streaming quan trọng nhất trong trường hợp nào, và khi nào thì
 non-streaming lại phù hợp hơn?** (1 đoạn văn)
-> Streaming quan trọng nhất trong các ứng dụng tương tác thời gian thực với người dùng cuối (như chatbot tư vấn, trợ lý viết code, hỏi đáp trực tiếp) khi câu trả lời dài để tối ưu chỉ số Time-To-First-Token (TTFT) giúp người dùng đọc ngay thay vì chờ màn hình tải; ngược lại, non-streaming phù hợp hơn cho các tác vụ xử lý theo lô (batch processing), gọi ngầm trong background, trích xuất dữ liệu có cấu trúc (JSON để parse sang code/DB), hoặc khi cần chạy bộ lọc kiểm duyệt an toàn trên toàn bộ văn bản hoàn chỉnh trước khi trả về.
+> Streaming quan trọng nhất trong các ứng dụng tương tác thời gian thực với người dùng cuối (như chatbot tư vấn, trợ lý viết code, hỏi đáp trực tiếp) khi câu trả lời dài để tối ưu giúp người dùng đọc ngay thay vì chờ màn hình tải; ngược lại, non-streaming phù hợp hơn cho các tác vụ xử lý theo batch, gọi ngầm trong background, trích xuất dữ liệu có cấu trúc, hoặc khi cần chạy bộ lọc kiểm duyệt an toàn trên toàn bộ văn bản hoàn chỉnh trước khi trả về.
 
 ### Câu 3.2 — Vì sao backoff theo cấp số nhân?
 **So với delay cố định (ví dụ luôn chờ 1 giây), exponential backoff có lợi
 thế gì khi API bị quá tải? Điều gì xảy ra nếu hàng nghìn client cùng retry
 với delay cố định giống nhau?**
-> So với delay cố định, exponential backoff tăng dần thời gian chờ sau mỗi lần thử (0.1s -> 0.2s -> 0.4s...) giúp server đang quá tải có thời gian đệm giải phóng tài nguyên để tự phục hồi; nếu hàng nghìn client cùng dùng một mức delay cố định, tất cả sẽ đồng loạt gửi lại request cùng lúc sau mỗi chu kỳ 1 giây, gây ra hiện tượng bão retry (thundering herd / retry storms) tiếp tục đánh sập server thay vì giúp nó ổn định trở lại.
+> So với delay cố định, exponential backoff tăng dần thời gian chờ sau mỗi lần thử (0.1s -> 0.2s -> 0.4s...) giúp server đang quá tải có thời gian đệm giải phóng tài nguyên để tự phục hồi; nếu hàng nghìn client cùng dùng một mức delay cố định, tất cả sẽ đồng loạt gửi lại request cùng lúc sau mỗi chu kỳ 1 giây, gây ra hiện tượng cùng lúc retry và tiếp tục đánh sập server thay vì giúp nó ổn định trở lại.
 
 ---
 
@@ -75,12 +75,6 @@ thích 1–2 lựa chọn từ ngữ quan trọng trong prompt (ví dụ: vì sa
 không có bộ nhớ dài hạn, không kiểm duyệt nội dung...)? Đề xuất một cải
 thiện cụ thể và mô tả ngắn cách triển khai:**
 > Hạn chế lớn nhất là bộ nhớ chỉ lưu tối đa 3 lượt hội thoại gần nhất nên bot sẽ quên sạch ngữ cảnh ban đầu khi chat kéo dài; đề xuất cải thiện là cơ chế Tóm tắt bộ nhớ nghĩa là khi hội thoại vượt quá 3 lượt, trước khi cắt bỏ các message cũ, gọi một model phụ tóm tắt các thông tin cốt lõi thành 2–3 câu rồi lưu vào đầu context/system prompt làm bối cảnh dài hạn.
-
-### Câu 4.2 — Hạn chế & cải thiện
-**Trợ lý của bạn hiện có hạn chế lớn nhất là gì (ví dụ: history chỉ 3 lượt,
-không có bộ nhớ dài hạn, không kiểm duyệt nội dung...)? Đề xuất một cải
-thiện cụ thể và mô tả ngắn cách triển khai:**
-> **Hạn chế lớn nhất:** Trợ lý chỉ lưu giữ tối đa 3 lượt hội thoại gần nhất (sliding window 6 messages) và hoàn toàn không có bộ nhớ dài hạn (persistent memory). Khi cuộc trò chuyện kéo dài, bot sẽ quên các thông tin ngữ cảnh quan trọng đã nói từ đầu (như tên học viên, trình độ hiện tại, dự án đang làm dở).**Đề xuất cải thiện:** Triển khai cơ chế Tóm tắt bộ nhớ (Memory Summarization).**Cách triển khai:** Khi số lượt hội thoại chuẩn bị vượt quá ngưỡng 3 lượt, trước khi cắt bỏ các message cũ, hệ thống gửi các message đó đến một model nhỏ (như `gpt-4o-mini` hoặc `llama-3.1-8b`) kèm prompt: *"Hãy tóm tắt ngắn gọn các sự kiện và thông tin cá nhân quan trọng trong đoạn hội thoại này thành 2-3 câu"*. Nội dung tóm tắt này sẽ được lưu cố định vào đầu danh sách tin nhắn hoặc ghép vào system prompt làm "bối cảnh dài hạn", giúp bot vừa nhớ được thông tin xuyên suốt vừa không làm bùng nổ token.
 
 ---
 
